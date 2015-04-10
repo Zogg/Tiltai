@@ -1,9 +1,0 @@
-FROM zogg/nanomsg
-
-WORKDIR /myproject
-COPY ./src /myproject
-
-COPY requirements.txt /myproject/requirements.txt
-RUN pip install -r requirements.txt
-
-ENTRYPOINT ["python", "run.py"]
