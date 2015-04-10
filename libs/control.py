@@ -3,6 +3,10 @@ from nanomsg import Socket, PUSH, PULL, PUB, SUB, SUB_SUBSCRIBE, PAIR, SOL_SOCKE
 import Queue
 import threading
 
+from logbook import Logger
+
+log = Logger("{host} - {service}".format(host=socket.gethostname(), service="Feeder"))
+
 
 sock_type = {'PUSH': PUSH,
              'PULL': PULL,
@@ -24,7 +28,7 @@ def receiver(queue, ports, stype=SUB):
     def receive_messages():
         while True:
             queue.put(in_sock.recv())
-            print("Message received")
+            log.info("Message received")
 
     receiver = threading.Thread(target=receive_messages)
     receiver.start()
@@ -45,10 +49,10 @@ def sender(queue, network, stype=PUSH):
         while True:
             try:
                 out_sock.send(queue.get(block=True))
-                print("Message has been sent")
+                log.info("Message has been sent")
             except NanoMsgAPIError as e:
-                print(e)
-                print(dir(e))
+                log.debug(e)
+                log.debug(dir(e))
                 
 
     receiver = threading.Thread(target=send_messages)
@@ -89,12 +93,12 @@ def iogate(type, queuein=Queue.Queue(), queueout=Queue.Queue(), network={}):
     def receive_messages():
         while True:
             queuein.put({'socket':in_sock, 'data': in_sock.recv()})
-            print("Message received")
+            log.info("Message received")
             
     def send_messages():
         while True:
             sock.send(queueout.get(block=True))
-            print("Message has been sent")
+            log.info("Message has been sent")
 
     receiver = threading.Thread(target=receive_messages)
     sender = threading.Thread(target=send_messages)
@@ -126,6 +130,15 @@ class PushPull():
     def __call__(self):
         pass
 
+
+#
+# Control mechanisms
+#
+
+
+def LinksGovernor(socket):
+  pass
+
 #        
 # SDN
 #
@@ -135,7 +148,7 @@ def dockersdn(queue_name):
   from consullib import addr
   import socket
   hostname = socket.gethostname()
-  print(hostname)
+  log.debug(hostname)
   import aerospike
   config = {
     'hosts': [
@@ -162,7 +175,7 @@ def dockersdn(queue_name):
         if link.get('type', None):
           nodes['type'] = sock_type[link['type']]
         
-        print(nodes)
+        log.debug(nodes)
         return nodes
 
   return {'nodes': []}

@@ -1,4 +1,4 @@
-from nanomsg import Socket, PUSH, PULL, PUB, SUB, SUB_SUBSCRIBE, PAIR
+from nanomsg import Socket, PUSH, PULL, PUB, SUB, SUB_SUBSCRIBE, PAIR, SOL_SOCKET, SNDTIMEO, NanoMsgAPIError
 
 import Queue
 import threading
@@ -11,6 +11,9 @@ sock_type = {'PUSH': PUSH,
              'PAIR': PAIR}
 
 subbed_topics = []
+
+out_endpoints = []
+in_endpoints = []
 
 def receiver(queue, ports, stype=SUB):
     in_sock = Socket(stype)
@@ -30,17 +33,23 @@ def receiver(queue, ports, stype=SUB):
 
 def sender(queue, network, stype=PUSH):
     out_sock = Socket(stype)
-
+    
+    out_sock.set_int_option(SOL_SOCKET, SNDTIMEO, 1000)
+    
     for node in network['nodes']:
-      print('tcp://{ip}:{port}'.format(ip=node['ip'], 
-                                                  port=node['port']))
-      out_sock.connect('tcp://{ip}:{port}'.format(ip=node['ip'], 
-                                                  port=node['port']))
-
+        endpoint = out_sock.connect('tcp://{ip}:{port}'.format(ip=node['ip'], 
+                                                               port=node['port']))
+        out_endpoints.append(endpoint)
+      
     def send_messages():
         while True:
-            out_sock.send(queue.get(block=True))
-            print("Message has been sent")
+            try:
+                out_sock.send(queue.get(block=True))
+                print("Message has been sent")
+            except NanoMsgAPIError as e:
+                print(e)
+                print(dir(e))
+                
 
     receiver = threading.Thread(target=send_messages)
     receiver.start()
@@ -116,6 +125,15 @@ class PushPull():
     
     def __call__(self):
         pass
+
+
+#
+# Control mechanisms
+#
+
+
+def LinksGovernor(socket):
+  pass
 
 #        
 # SDN
