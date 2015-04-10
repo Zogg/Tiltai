@@ -1,0 +1,78 @@
+{
+  "id": "alchemy",
+  "groups": [
+    {
+      "id": "discovery",
+      "apps": [
+        {   "container": {
+            "type": "DOCKER",
+            "docker": {
+              "image": "progrium/consul",
+              "network": "BRIDGE",
+              "portMappings": [
+                { "containerPort": 8400, "hostPort": 8400, "protocol": "tcp" },
+                { "containerPort": 8500, "hostPort": 8500, "protocol": "tcp" },
+                { "containerPort": 53, "hostPort": 53, "protocol": "udp" }
+              ]
+            }
+          },
+          "id": "consul-standalone",
+          "args": ["-server", "-bootstrap", "-advertise 172.17.42.1"],
+          "instances": "1",
+          "cpus": "0.2",
+          "mem": "150",
+          "uris": [],
+          "constraints": [["hostname", "UNIQUE"]]
+        },
+        {   "container": {
+            "type": "DOCKER",
+            "docker": {
+              "image": "progrium/registrator",
+              "network": "BRIDGE"
+            },
+            "volumes": [
+              {
+                "containerPath": "/tmp/docker.sock",
+                "hostPath": "/var/run/docker.sock",
+                "mode": "RO"
+              }
+            ]
+          },
+          "id": "registrator",
+          "args": ["consul://172.17.42.1:8500"],
+          "dependencies": ["/bliubliu/discovery/consul-standalone"],
+          "instances": "1",
+          "cpus": "0.2",
+          "mem": "256",
+          "uris": [],
+          "constraints": [["hostname", "UNIQUE"]]
+        }
+      ]
+    },{
+      "id": "frontgates",
+      "apps": []
+    },{
+      "id": "apps",
+      "dependencies": ["/bliubliu/discovery", "/bliubliu/frontgates"],
+      "apps": [
+        {
+          "container": {
+            "type": "DOCKER",
+            "docker": {
+              "image": "zogg/feeder",
+              "network": "BRIDGE"
+            }
+          },
+          "id": "feeder",
+          "instances": "1",
+          "cpus": "0.1",
+          "mem": "50",
+          "uris": [],
+          "upgradeStrategy": {
+            "minimumHealthCapacity": 0
+          }
+        }
+      ]
+    }
+  ]
+}

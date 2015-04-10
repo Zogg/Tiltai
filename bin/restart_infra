@@ -1,0 +1,5 @@
+#!/bin/bash
+
+./kill_infra
+sleep 3
+./make_infra

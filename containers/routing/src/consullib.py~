@@ -1,0 +1,9 @@
+import dns.resolver
+
+def addr(service):
+  r = dns.resolver.query(service, 'SRV')
+  ip = r.response.additional[0].to_rdataset().items[0].address
+  port = r[0].port
+  print(r.response)
+  return {'ip': ip, 'port': port}
+
