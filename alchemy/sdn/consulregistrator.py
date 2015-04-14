@@ -1,5 +1,11 @@
 import dns.resolver
 import time
+import socket
+
+from logbook import Logger
+
+
+log = Logger("{host} - {service}".format(host=socket.gethostname(), service="Consul-Registrator address"))
 
 def addr(service, blocking=True):
   answered = False
@@ -8,10 +14,10 @@ def addr(service, blocking=True):
     try:
       r = dns.resolver.query(service, 'SRV')
     except Exception as e:
-      print('Could not find address', service, e)
+      log.warn('Could not find address', service, e)
       if blocking:
         time.sleep(10)
-        print("Retrying...")
+        log.warn("Retrying...")
         continue
       else:
         return []
@@ -24,8 +30,8 @@ def addr(service, blocking=True):
     for srvrecord in port_fqdn:
       addresses.append({'port':srvrecord[0], 'ip':fqdn_ip[srvrecord[1]]})
 
-    print(r.response)
-    print(addresses)
+    log.debug(r.response)
+    log.debug(addresses)
     return addresses
     
     

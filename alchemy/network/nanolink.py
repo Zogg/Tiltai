@@ -1,10 +1,12 @@
 from nanomsg import Socket, PUSH, PULL, PUB, SUB, SUB_SUBSCRIBE, PAIR, SOL_SOCKET, SNDTIMEO, NanoMsgAPIError
 
 import threading
+import Queue
+import socket
 
 from logbook import Logger
 
-log = Logger("{host} - {service}".format(host=socket.gethostname(), service="Feeder"))
+log = Logger("{host} - {service}".format(host=socket.gethostname(), service="nanolink"))
 
 
 sock_type = {'PUSH': PUSH,
@@ -112,3 +114,10 @@ def topic(sock, topic=None):
     if topic not in subbed_topics:
         sock.set_string_option(SUB, SUB_SUBSCRIBE, topic)
         subbed_topics.append(topic)
+        
+        
+def pull(queue):
+    return queue.get(block=True)
+
+def push(message, queue):
+    queue.put(message)
