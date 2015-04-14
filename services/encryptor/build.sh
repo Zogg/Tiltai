@@ -1,4 +1,5 @@
 #!/bin/bash
 
-cp -f ../../libs/* ./src
+mkdir ./libs
+cp -f ../../dist/*.tar.gz ./libs/
 sudo docker build -t zogg/encryptor .

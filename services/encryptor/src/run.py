@@ -1,8 +1,13 @@
-from control import gate, push, pull
-from control import dockersdn
+from alchemy.network.nanolink import gate, push, pull
+from alchemy.sdn.docker import dockersdn
+
+from logbook import Logger
+import socket
 
 import hashlib
 
+
+log = Logger("{host} - {service}".format(host=socket.gethostname(), service="Encryptor"))
 
 def encryptor():
     plaintext = gate('in', network=dockersdn('plaintext'))
