@@ -136,14 +136,20 @@ class PushPull():
 #
 
 
-def LinksGovernor(socket):
-  pass
+def LinksGovernor(socket, interval=10):
+  #Regular updates
+  while True:
+    update_addresses()
+    reconnect_endpoints(socket)
+    time.sleep(interval)
+  
+  #If link is fucked, and we have less than 1 endpoint, refresh
 
 #        
 # SDN
 #
 
-def dockersdn(queue_name):
+def dockersdn(queue_name, resolver=None, storage=None):
   """whoami"""
   from consullib import addr
   import socket
