@@ -60,7 +60,10 @@
             "type": "DOCKER",
             "docker": {
               "image": "zogg/feeder",
-              "network": "BRIDGE"
+              "network": "BRIDGE",
+              "parameters": [
+                { "key": "hostname", "value": "feeder" }
+              ]
             }
           },
           "id": "feeder",
@@ -80,6 +83,9 @@
               "network": "BRIDGE",
               "portMappings": [
                 { "containerPort": 4567, "hostPort": 0, "protocol": "tcp" }
+              ],
+              "parameters": [
+                { "key": "hostname", "value": "encryptor" }
               ]
             }
           },
@@ -100,6 +106,9 @@
               "network": "BRIDGE",
               "portMappings": [
                 { "containerPort": 5678, "hostPort": 0, "protocol": "tcp" }
+              ],
+              "parameters": [
+                { "key": "hostname", "value": "emailsink" }
               ]
             }
           },
