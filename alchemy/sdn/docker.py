@@ -11,7 +11,7 @@ log = Logger("{host} - {service}".format(host=socket.gethostname(), service="Doc
 
 def dockersdn(queue_name, resolver=addr, storage=storage):
   """whoami"""
-  
+
   hostname = socket.gethostname()
   log.debug(hostname)
 
@@ -21,14 +21,15 @@ def dockersdn(queue_name, resolver=addr, storage=storage):
     for link in links['links']:
       if link['queue'] == queue_name:
         if link.get('outgate', None):
-          nodes = {'nodes': resolver(link['outgate'])}
+          protocolized_nodes = ['tcp://' + address for address in resolver(link['outgate'])]
+          endpoints = {'endpoints': protocolized_nodes}
         else:
-          nodes = {'ports': link.get('ports', [])}
+          endpoints = {'endpoints': link.get('addresses', [])}
                   
         if link.get('type', None):
-          nodes['type'] = sock_type[link['type']]
+          endpoints['type'] = sock_type[link['type']]
         
-        log.debug(nodes)
-        return nodes
+        log.debug(endpoints)
+        return endpoints
 
-  return {'nodes': []}
+  return {'endpoints': []}

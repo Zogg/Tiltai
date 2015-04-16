@@ -14,7 +14,8 @@ def addr(service, blocking=True):
     try:
       r = dns.resolver.query(service, 'SRV')
     except Exception as e:
-      log.warn('Could not find address', service, e)
+      log.warn('Could not find address of the service: {0}'.format(service))
+      log.warn(str(e))
       if blocking:
         time.sleep(10)
         log.warn("Retrying...")
@@ -28,7 +29,7 @@ def addr(service, blocking=True):
     addresses = []
 
     for srvrecord in port_fqdn:
-      addresses.append({'port':srvrecord[0], 'ip':fqdn_ip[srvrecord[1]]})
+      addresses.append(fqdn_ip[srvrecord[1]] + ':' + str(srvrecord[0]))
 
     log.debug(r.response)
     log.debug(addresses)

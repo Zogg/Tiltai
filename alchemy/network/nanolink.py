@@ -21,11 +21,11 @@ out_endpoints = []
 in_endpoints = []
 
 
-def receiver(queue, ports, stype=SUB):
+def receiver(queue, addresses, stype):
     in_sock = Socket(stype)
     
-    for port in ports:
-      in_sock.bind('tcp://0.0.0.0:{port}'.format(port=port))
+    for address in addresses:
+      in_sock.bind(address)
     
     def receive_messages():
         while True:
@@ -37,14 +37,13 @@ def receiver(queue, ports, stype=SUB):
     
     return in_sock
 
-def sender(queue, network, stype=PUSH):
+def sender(queue, addresses, stype):
     out_sock = Socket(stype)
     
     out_sock.set_int_option(SOL_SOCKET, SNDTIMEO, 1000)
     
-    for node in network['nodes']:
-        endpoint = out_sock.connect('tcp://{ip}:{port}'.format(ip=node['ip'], 
-                                                               port=node['port']))
+    for address in addresses:
+        endpoint = out_sock.connect(address)
         out_endpoints.append(endpoint)
       
     def send_messages():
@@ -62,11 +61,13 @@ def sender(queue, network, stype=PUSH):
 
     return out_sock
 
-def gate(type, queue=Queue.Queue(), network={}):
+def gate(type, queue=Queue.Queue(), network={}, governor=None):
     if type == 'out':
-        sender(queue, network, stype=network.get('type', PUSH))
+        socket = sender(queue, network['endpoints'], stype=network['type'])
+        if governor:
+          governor(socket=socket, socketupdater=update, endpoints=[ep.address for ep in socket.endpoints])
     elif type == 'in':
-        receiver(queue, network['ports'], stype=network.get('type', SUB))
+        socket = receiver(queue, network['endpoints'], stype=network['type'])
     elif type == 'utility':
         pass
     else:
