@@ -12,7 +12,7 @@
               "portMappings": [
                 { "containerPort": 8400, "hostPort": 8400, "protocol": "tcp" },
                 { "containerPort": 8500, "hostPort": 8500, "protocol": "tcp" },
-                { "containerPort": 53, "hostPort": 53, "protocol": "udp" }
+                { "containerPort": 53, "hostPort": 53, "protocol": "tcp" }
               ]
             }
           },
