@@ -1,4 +1,5 @@
 from nanomsg import Socket, PUSH, PULL, PUB, SUB, SUB_SUBSCRIBE, PAIR, SOL_SOCKET, SNDTIMEO, NanoMsgAPIError
+from nanomsg import wrapper as nn_wrapper
 
 import threading
 import Queue
@@ -122,3 +123,27 @@ def pull(queue):
 
 def push(message, queue):
     queue.put(message)
+    
+    
+def update(socket, operational_address):
+  # Close dead endpoints
+  log.debug("Updating with new addresses...")
+  endpoints_tobe_removed = []
+  for point in socket._endpoints:
+    if point.address not in operational_address:
+      endpoints_tobe_removed.append(point)
+  
+  log.debug('Pre:' + str(socket.endpoints))    
+  for point in endpoints_tobe_removed:
+      log.debug('Shutdown dead endpoint...')
+      ret = nn_wrapper.nn_shutdown(socket.fd, point._endpoint_id)
+      # TODO: Error checking
+      socket._endpoints.remove(point)
+      log.debug('Done with errno: ' + str(ret))
+  log.debug('Post:' + str(socket.endpoints))
+  
+  # Establish new endpoints
+  for point in operational_address:
+    if point not in [endpoint.address for endpoint in socket.endpoints]:
+      log.debug('Connecting to new endpoint address: ' + point)
+      socket.connect(point)
