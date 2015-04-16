@@ -12,7 +12,7 @@ def addr(service, blocking=True):
   
   while not answered:
     try:
-      r = dns.resolver.query(service, 'SRV')
+      r = dns.resolver.query(service, 'SRV', tcp=True)
     except Exception as e:
       log.warn('Could not find address of the service: {0}'.format(service))
       log.warn(str(e))
