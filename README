@@ -16,12 +16,12 @@ plaintext = gate('out', network={'endpoints': addr('encryptor'),
                                  'type': 'PUSH'}) 
 ```
 
-So now we query consul by docker container's name and get all the addresses of all the 'encryptors' that would be running. However, the type of the socket to use still remains hardcoded. 
+So now we query consul by docker container's name and get all the addresses of all the 'encryptors' that would be running. However, the type of the socket to use still remains hardcoded. As the ports and IP assignments are taken care by DCOS, 
 
 ```
 from alchemy.sdn.consulregistrator import addr
 
-plaintext = gate('out', network=dockersdn('plaintext')) 
+plaintext = gate('out', network=dockersdn('plaintext', )) 
 ```
 
 
