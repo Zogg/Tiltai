@@ -1,0 +1,1 @@
+{"emailsink": {"links": [{"queue": "crypted_mails", "type": "PULL", "addresses": ["tcp://0.0.0.0:5678"]}]}, "encryptor": {"links": [{"queue": "encrypted", "type": "PUSH", "outgate": "emailsink"}, {"queue": "plaintext", "type": "PULL", "addresses": ["tcp://0.0.0.0:4567"]}]}, "feeder": {"links": [{"queue": "plaintext", "type": "PUSH", "outgate": "encryptor"}]}}
