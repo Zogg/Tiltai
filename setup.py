@@ -20,7 +20,7 @@ setup(
     keywords = "elegant microservice flow",
     url = "https://github.com/Zogg/docker-alchemy",
     packages=find_packages(),
-    long_description=read('README'),
+    long_description=read('README.rst'),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
