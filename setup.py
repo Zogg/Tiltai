@@ -11,7 +11,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name = "ProjectX",
+    name = "Tiltai",
     version = "0.1.0",
     author = "Rokas Aleksiūnas",
     author_email = "rokas.aleksiunas@gmail.com",
