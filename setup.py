@@ -18,7 +18,7 @@ setup(
     description = ("The most elegant set of equipment for python microservices"),
     license = "GPLv3",
     keywords = "elegant microservice flow",
-    url = "https://github.com/Zogg/docker-alchemy",
+    url = "https://github.com/Zogg/Tiltai",
     packages=find_packages(),
     long_description=read('README.rst'),
     classifiers=[
