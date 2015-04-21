@@ -16,24 +16,24 @@ config = {
 }
 
 
-def storage(hostname):
+def get_topology(servicename, config=config):
   client = aerospike.client(config)
   client.connect()
 
-  key = ('sdn', 'service', hostname)
+  key = ('sdn', 'service', servicename)
   (key, meta, links) = client.select(key, ['links'])
   client.close()
   return links
-  
-  
-def upload_links(data):
+
+
+def put_topology(topology, config=config):
   client = aerospike.client(config)
   client.connect()
   
-  for service, links in data.iteritems():
+  for service, links in topology.iteritems():
     client.put(('sdn','service',service), links)
   
-  for service, links in data.iteritems():
+  for service, links in topology.iteritems():
     (key, meta, links) = client.select(('sdn','service',service), ['links'])
     log.info(links)  
     

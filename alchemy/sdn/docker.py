@@ -1,15 +1,13 @@
-import socket
-
-from alchemy.sdn.aerospikesdn import storage
-from alchemy.sdn.consulregistrator import addr
 from alchemy.network.nanolink import sock_type
+
+import socket
 
 from logbook import Logger
 
 
 log = Logger("{host} - {service}".format(host=socket.gethostname(), service="DockerSDN"))
 
-def dockersdn(queue_name, resolver=addr, storage=storage):
+def dockersdn(queue_name, resolver, storage):
   """whoami"""
 
   hostname = socket.gethostname()

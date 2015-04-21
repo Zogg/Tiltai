@@ -1,6 +1,7 @@
 from alchemy.network.nanolink import gate, push, pull
 from alchemy.sdn.docker import dockersdn
-from alchemy.sdn.filesystem import storage as fromfile
+from alchemy.sdn.consulregistrator import get_topology
+from alchemy.sdn.consulregistrator import addr
 from alchemy.control.network import routine
 
 
@@ -15,8 +16,8 @@ from logbook import Logger
 log = Logger("{host} - {service}".format(host=socket.gethostname(), service="Feeder"))
 
 def feeder():
-    plaintext = gate('out', network=dockersdn('plaintext', storage=fromfile), 
-                            governor=partial(routine, resolver=partial(dockersdn, 'plaintext')))
+    plaintext = gate('out', network=dockersdn('plaintext', resolver=addr, storage=get_topology), 
+                            governor=partial(routine, resolver=partial(dockersdn, 'plaintext', addr, get_topology)))
 
     while True:
         log.debug("Sending message")
