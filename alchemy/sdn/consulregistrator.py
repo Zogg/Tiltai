@@ -1,4 +1,5 @@
 import dns.resolver
+import consulate
 import time
 import socket
 
@@ -34,7 +35,34 @@ def addr(service, blocking=True):
     log.debug(r.response)
     log.debug(addresses)
     return addresses
-    
-    
-def get_topology():
-  return 
+
+
+def get_topology(servicename, blocking=True):
+  answered = False
+  
+  while not answered:
+    try:
+      session = consulate.Session()
+    except Exception as e:
+      log.warn(str(e))
+      if blocking:
+        time.sleep(10)
+        log.warn("Retrying...")
+        continue
+      else:
+        return []
+
+    try:
+      return session.kv['sdn-services-{name}'.format(name=servicename)]['links']
+    except KeyError as e:
+      log.error(e)
+      return {}
+
+
+def put_topology(topology, blocking=True):
+  session = consulate.Session()
+
+  for service, links in topology.iteritems():
+    session.kv['sdn-services-{name}'.format(name=service)] = links
+
+  return [key for key in session.kv.find('sdn-services')]  
