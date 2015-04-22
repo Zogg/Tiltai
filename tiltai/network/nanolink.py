@@ -62,7 +62,10 @@ def sender(queue, addresses, stype):
 
     return out_sock
 
-def gate(type, queue=Queue.Queue(), network={}, governor=None):
+def gate(type, queue=None, network={}, governor=None):
+    if not queue:
+      queue = Queue.Queue()
+      
     if type == 'out':
         socket = sender(queue, network['endpoints'], stype=network['type'])
         if governor:
@@ -77,13 +80,22 @@ def gate(type, queue=Queue.Queue(), network={}, governor=None):
     
     return queue
 
-def igate(queue=Queue.Queue(), network={}):
+def igate(queue=None, network={}):
+  if not queue:
+    queue = Queue.Queue()
+    
   return gate('in', queue, network)
 
-def ogate(queue=Queue.Queue(), network={}):
+def ogate(queue=None, network={}):
+  if not queue:
+    queue = Queue.Queue()
+    
   return gate('out', queue, network) 
 
 def iogate(type, queuein=Queue.Queue(), queueout=Queue.Queue(), network={}):
+    if not queue:
+      queue = Queue.Queue()
+      
     sock = Socket(network['type'])
     
     if type == 'in':
