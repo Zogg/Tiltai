@@ -1,4 +1,4 @@
-from alchemy.network.nanolink import sock_type
+from tiltai.network.nanolink import sock_type
 
 import socket
 
