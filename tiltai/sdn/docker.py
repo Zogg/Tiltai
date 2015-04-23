@@ -8,7 +8,28 @@ from logbook import Logger
 log = Logger("{host} - {service}".format(host=socket.gethostname(), service="DockerSDN"))
 
 def dockersdn(queue_name, resolver, storage):
-  """whoami"""
+    """
+    Get addresses and type of the socket from within docker container. A 
+    hostname of the container is used as the identifier to receive network links
+    definition.
+
+    Parameters
+    ----------
+    queue_name : string
+        Name of the queue, for which to get network settings
+    resolver : callable
+        A `name` -> `network address` mapper. More than likely one of resolvers
+        provided by `tiltai.sdn` modules
+    storage : callable
+        A data backend which provides network mapping: definition of links 
+        between gates. More than likely one of the methods provided by 
+        `tiltai.sdn` modules
+
+    Returns
+    -------
+    network : dict
+        A dict of shape `{'endpoints': [], 'type': value}`
+    """
 
   hostname = socket.gethostname()
   log.debug(hostname)

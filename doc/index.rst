@@ -39,7 +39,7 @@ Contents:
 
 API Docs
         
-.. automodule:: alchemy.network.nanolink
+.. automodule:: tiltai.network.nanolink
     :members:
     :undoc-members:
     :inherited-members:

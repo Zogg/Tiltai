@@ -9,6 +9,21 @@ from logbook import Logger
 log = Logger("{host} - {service}".format(host=socket.gethostname(), service="Consul-Registrator address"))
 
 def addr(service, blocking=True):
+    """
+    Query Consul's DNS interface.
+    
+    Parameters
+    ----------
+    service : string
+        Name of the service
+    blocking : bool
+        Query for the service until it is discovered (Default value = True)
+
+    Returns
+    -------
+        list
+        List of strings in shape of `<ip>:<port>`
+    """
   answered = False
   
   while not answered:
@@ -38,6 +53,25 @@ def addr(service, blocking=True):
 
 
 def get_topology(servicename, blocking=True):
+    """
+    Retrieve network topology from Consul's key/value store.
+    
+    Parameters
+    ----------
+    servicename :
+        Name of the service
+    blocking :
+        Retry if session to the Consul server may not be established
+         (Default value = True)
+
+    Returns
+    -------
+        list of dicts
+        List of dicts in shape of, example:
+            `[{"outgate": "emailsink", "queue": "encrypted", "type": "PUSH"},
+              {"addresses": ["tcp://0.0.0.0:4567"], "queue": "plaintext", 
+                                                    "type": "PULL"}]`
+    """
   answered = False
   
   while not answered:
@@ -60,6 +94,21 @@ def get_topology(servicename, blocking=True):
 
 
 def put_topology(topology, blocking=True):
+    """
+    Store network topology to Consul's key/value store.
+    
+    Parameters
+    ----------
+    topology : dict
+        Topology definition
+    blocking :
+        Retry if session to the Consul server may not be established
+         (Default value = True)
+
+    Returns
+    -------
+
+    """
   session = consulate.Session()
 
   for service, links in topology.iteritems():

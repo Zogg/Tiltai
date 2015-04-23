@@ -17,6 +17,7 @@ import os
 import shlex
 
 sys.path.append('.')
+sys.path.append('..')
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -35,6 +36,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.pngmath',
     'sphinx.ext.viewcode',
+    'sphinx.ext.napoleon',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -52,7 +54,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Alchemy'
+project = u'Tiltai'
 copyright = u'2015, Rokas Aleksiūnas'
 author = u'Rokas Aleksiūnas'
 
@@ -206,7 +208,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Alchemydoc'
+htmlhelp_basename = 'Tiltaidoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -228,7 +230,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'Alchemy.tex', u'Alchemy Documentation',
+  (master_doc, 'Tiltai.tex', u'Tiltai Documentation',
    u'Rokas Aleksiūnas', 'manual'),
 ]
 
@@ -258,7 +260,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'alchemy', u'Alchemy Documentation',
+    (master_doc, 'tiltai', u'Tiltai Documentation',
      [author], 1)
 ]
 
@@ -272,8 +274,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  (master_doc, 'Alchemy', u'Alchemy Documentation',
-   author, 'Alchemy', 'One line description of project.',
+  (master_doc, 'Tiltai', u'Tiltai Documentation',
+   author, 'Tiltai', 'One line description of project.',
    'Miscellaneous'),
 ]
 
