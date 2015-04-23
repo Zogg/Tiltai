@@ -1,11 +1,13 @@
 from tiltai.network.nanolink import sock_type
+from tiltai.utils import tiltai_logs_format
 
 import socket
 
-from logbook import Logger
+from logbook import Logger, StderrHandler
 
 
-log = Logger("{host} - {service}".format(host=socket.gethostname(), service="DockerSDN"))
+err = StderrHandler(format_string=tiltai_logs_format)
+log = Logger("sdn[docker]")
 
 def dockersdn(queue_name, resolver, storage):
     """
@@ -30,25 +32,25 @@ def dockersdn(queue_name, resolver, storage):
     network : dict
         A dict of shape `{'endpoints': [], 'type': value}`
     """
+  with err.applicationbound():
+    hostname = socket.gethostname()
+    log.debug(hostname)
 
-  hostname = socket.gethostname()
-  log.debug(hostname)
+    links = storage(hostname)
 
-  links = storage(hostname)
+    if links:
+      for link in links['links']:
+        if link['queue'] == queue_name:
+          if link.get('outgate', None):
+            protocolized_nodes = ['tcp://' + address for address in resolver(link['outgate'])]
+            endpoints = {'endpoints': protocolized_nodes}
+          else:
+            endpoints = {'endpoints': link.get('addresses', [])}
+                    
+          if link.get('type', None):
+            endpoints['type'] = sock_type[link['type']]
+          
+          log.debug(endpoints)
+          return endpoints
 
-  if links:
-    for link in links['links']:
-      if link['queue'] == queue_name:
-        if link.get('outgate', None):
-          protocolized_nodes = ['tcp://' + address for address in resolver(link['outgate'])]
-          endpoints = {'endpoints': protocolized_nodes}
-        else:
-          endpoints = {'endpoints': link.get('addresses', [])}
-                  
-        if link.get('type', None):
-          endpoints['type'] = sock_type[link['type']]
-        
-        log.debug(endpoints)
-        return endpoints
-
-  return {'endpoints': []}
+    return {'endpoints': []}

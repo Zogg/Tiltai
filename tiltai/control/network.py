@@ -2,10 +2,13 @@ import time
 import threading
 import socket
 
+from tiltai.utils import tiltai_logs_format
+
 from logbook import Logger
 
 
-log = Logger("{host} - {service}".format(host=socket.gethostname(), service="network-routine()"))
+err = StderrHandler(format_string=tiltai_logs_format)
+log = Logger("control[network]")
 
 def routine(resolver, socketupdater, socket, endpoints):
   """
@@ -24,18 +27,19 @@ def routine(resolver, socketupdater, socket, endpoints):
       A list of addresses of format '<protocol>://<ip>:<port>'
   """
   
-  interval = 10
-  
-  def update():
-    """ """
-    while True:
-      time.sleep(interval)
-      
-      res_endpoints = resolver()['endpoints']
-      new_list = endpoints and res_endpoints
-      log.debug('New list of endpoints to be applied: ' + str(new_list))
-      
-      socketupdater(socket, new_list)    
-      
-  updater = threading.Thread(target=update)
-  updater.start()
+  with err.applicationbound():
+    interval = 10
+    
+    def update():
+      """ """
+      while True:
+        time.sleep(interval)
+        
+        res_endpoints = resolver()['endpoints']
+        new_list = endpoints and res_endpoints
+        log.debug('New list of endpoints to be applied: ' + str(new_list))
+        
+        socketupdater(socket, new_list)    
+        
+    updater = threading.Thread(target=update)
+    updater.start()

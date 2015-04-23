@@ -1,13 +1,16 @@
 from nanomsg import Socket, PUSH, PULL, PUB, SUB, SUB_SUBSCRIBE, PAIR, SOL_SOCKET, SNDTIMEO, NanoMsgAPIError
 from nanomsg import wrapper as nn_wrapper
 
+from tiltai.utils import tiltai_logs_format
+
 import threading
 import Queue
 import socket
 
 from logbook import Logger
 
-log = Logger("{host} - {service}".format(host=socket.gethostname(), service="nanolink"))
+err = StderrHandler(format_string=tiltai_logs_format)
+log = Logger("network[nanolink]")
 
 
 sock_type = {'PUSH': PUSH,
@@ -42,21 +45,22 @@ def receiver(queue, addresses, stype):
     -------
         nanomsg socket object
     """
-    in_sock = Socket(stype)
-    
-    for address in addresses:
-      in_sock.bind(address)
-    
-    def receive_messages():
-        """ """
-        while True:
-            queue.put(in_sock.recv())
-            log.info("Message received")
+    with err.applicationbound():
+      in_sock = Socket(stype)
+      
+      for address in addresses:
+        in_sock.bind(address)
+      
+      def receive_messages():
+          """ """
+          while True:
+              queue.put(in_sock.recv())
+              log.info("Message received")
 
-    receiver = threading.Thread(target=receive_messages)
-    receiver.start()
-    
-    return in_sock
+      receiver = threading.Thread(target=receive_messages)
+      receiver.start()
+      
+      return in_sock
 
 def sender(queue, addresses, stype):
     """
@@ -78,29 +82,30 @@ def sender(queue, addresses, stype):
     -------
         nanomsg socket object
     """
-    out_sock = Socket(stype)
-    
-    out_sock.set_int_option(SOL_SOCKET, SNDTIMEO, 1000)
-    
-    for address in addresses:
-        endpoint = out_sock.connect(address)
-        out_endpoints.append(endpoint)
+    with err.applicationbound():
+      out_sock = Socket(stype)
       
-    def send_messages():
-        """ """
-        while True:
-            try:
-                out_sock.send(queue.get(block=True))
-                log.info("Message has been sent")
-            except NanoMsgAPIError as e:
-                log.debug(e)
-                log.debug(dir(e))
-                
+      out_sock.set_int_option(SOL_SOCKET, SNDTIMEO, 1000)
+      
+      for address in addresses:
+          endpoint = out_sock.connect(address)
+          out_endpoints.append(endpoint)
+        
+      def send_messages():
+          """ """
+          while True:
+              try:
+                  out_sock.send(queue.get(block=True))
+                  log.info("Message has been sent")
+              except NanoMsgAPIError as e:
+                  log.debug(e)
+                  log.debug(dir(e))
+                  
 
-    receiver = threading.Thread(target=send_messages)
-    receiver.start()
+      receiver = threading.Thread(target=send_messages)
+      receiver.start()
 
-    return out_sock
+      return out_sock
 
 def gate(type, queue=None, network={}, governor=None):
     """
@@ -131,22 +136,24 @@ def gate(type, queue=None, network={}, governor=None):
     -------
         A queue object.
     """
-    if not queue:
-      queue = Queue.Queue()
+
+    with err.applicationbound():
+      if not queue:
+        queue = Queue.Queue()
+        
+      if type == 'out':
+          socket = sender(queue, network['endpoints'], stype=network['type'])
+          if governor:
+            governor(socket=socket, socketupdater=update, endpoints=[ep.address for ep in socket.endpoints])
+      elif type == 'in':
+          socket = receiver(queue, network['endpoints'], stype=network['type'])
+      elif type == 'utility':
+          pass
+      else:
+          raise ValueError("No such gate type known.")
+          return Null
       
-    if type == 'out':
-        socket = sender(queue, network['endpoints'], stype=network['type'])
-        if governor:
-          governor(socket=socket, socketupdater=update, endpoints=[ep.address for ep in socket.endpoints])
-    elif type == 'in':
-        socket = receiver(queue, network['endpoints'], stype=network['type'])
-    elif type == 'utility':
-        pass
-    else:
-        raise ValueError("No such gate type known.")
-        return Null
-    
-    return queue
+      return queue
 
 def igate(queue=None, network={}):
   """
@@ -297,24 +304,26 @@ def update(socket, operational_address):
       disconnected, new ones will be connected to.
 
   """
-  # Close dead endpoints
-  log.debug("Updating with new addresses...")
-  endpoints_tobe_removed = []
-  for point in socket._endpoints:
-    if point.address not in operational_address:
-      endpoints_tobe_removed.append(point)
   
-  log.debug('Pre:' + str(socket.endpoints))    
-  for point in endpoints_tobe_removed:
-      log.debug('Shutdown dead endpoint...')
-      ret = nn_wrapper.nn_shutdown(socket.fd, point._endpoint_id)
-      # TODO: Error checking
-      socket._endpoints.remove(point)
-      log.debug('Done with errno: ' + str(ret))
-  log.debug('Post:' + str(socket.endpoints))
-  
-  # Establish new endpoints
-  for point in operational_address:
-    if point not in [endpoint.address for endpoint in socket.endpoints]:
-      log.debug('Connecting to new endpoint address: ' + point)
-      socket.connect(point)
+  with err.applicationbound():
+    # Close dead endpoints
+    log.debug("Updating with new addresses...")
+    endpoints_tobe_removed = []
+    for point in socket._endpoints:
+      if point.address not in operational_address:
+        endpoints_tobe_removed.append(point)
+    
+    log.debug('Pre:' + str(socket.endpoints))    
+    for point in endpoints_tobe_removed:
+        log.debug('Shutdown dead endpoint...')
+        ret = nn_wrapper.nn_shutdown(socket.fd, point._endpoint_id)
+        # TODO: Error checking
+        socket._endpoints.remove(point)
+        log.debug('Done with errno: ' + str(ret))
+    log.debug('Post:' + str(socket.endpoints))
+    
+    # Establish new endpoints
+    for point in operational_address:
+      if point not in [endpoint.address for endpoint in socket.endpoints]:
+        log.debug('Connecting to new endpoint address: ' + point)
+        socket.connect(point)
