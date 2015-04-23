@@ -12,21 +12,22 @@ err = StderrHandler(format_string=tiltai_logs_format)
 log = Logger("sdn[consulregistrator]")
 
 def addr(service, blocking=True):
-    """
-    Query Consul's DNS interface.
-    
-    Parameters
-    ----------
-    service : string
-        Name of the service
-    blocking : bool
-        Query for the service until it is discovered (Default value = True)
+  """
+  Query Consul's DNS interface.
+  
+  Parameters
+  ----------
+  service : string
+      Name of the service
+  blocking : bool
+      Query for the service until it is discovered (Default value = True)
 
-    Returns
-    -------
-        list
-        List of strings in shape of `<ip>:<port>`
-    """
+  Returns
+  -------
+      list
+      List of strings in shape of `<ip>:<port>`
+  """
+  
   with err.applicationbound():
     answered = False
     
