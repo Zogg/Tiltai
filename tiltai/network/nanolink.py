@@ -142,13 +142,11 @@ def gate(type, queue=None, network={}, governor=None):
         queue = Queue.Queue()
         
       if type == 'out':
-          socket = sender(queue, network['endpoints'], stype=network['type'])
+          socket = sender(queue, network['endpoints'], stype=sock_type[network['type']])
           if governor:
             governor(socket=socket, socketupdater=update, endpoints=[ep.address for ep in socket.endpoints])
       elif type == 'in':
-          socket = receiver(queue, network['endpoints'], stype=network['type'])
-      elif type == 'utility':
-          pass
+          socket = receiver(queue, network['endpoints'], stype=sock_type[network['type']])
       else:
           raise ValueError("No such gate type known.")
           return Null

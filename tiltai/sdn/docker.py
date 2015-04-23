@@ -1,4 +1,3 @@
-from tiltai.network.nanolink import sock_type
 from tiltai.utils import tiltai_logs_format
 
 import socket
@@ -49,7 +48,7 @@ def dockersdn(queue_name, resolver, storage):
             endpoints = {'endpoints': link.get('addresses', [])}
                     
           if link.get('type', None):
-            endpoints['type'] = sock_type[link['type']]
+            endpoints['type'] = link['type']
           
           log.debug(endpoints)
           return endpoints
