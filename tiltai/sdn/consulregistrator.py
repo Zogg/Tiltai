@@ -58,25 +58,25 @@ def addr(service, blocking=True):
 
 
 def get_topology(servicename, blocking=True):
-    """
-    Retrieve network topology from Consul's key/value store.
-    
-    Parameters
-    ----------
-    servicename :
-        Name of the service
-    blocking :
-        Retry if session to the Consul server may not be established
-         (Default value = True)
+  """
+  Retrieve network topology from Consul's key/value store.
+  
+  Parameters
+  ----------
+  servicename :
+      Name of the service
+  blocking :
+      Retry if session to the Consul server may not be established
+       (Default value = True)
 
-    Returns
-    -------
-        list of dicts
-        List of dicts in shape of, example:
-            `[{"outgate": "emailsink", "queue": "encrypted", "type": "PUSH"},
-              {"addresses": ["tcp://0.0.0.0:4567"], "queue": "plaintext", 
-                                                    "type": "PULL"}]`
-    """
+  Returns
+  -------
+      list of dicts
+      List of dicts in shape of, example:
+          `[{"outgate": "emailsink", "queue": "encrypted", "type": "PUSH"},
+            {"addresses": ["tcp://0.0.0.0:4567"], "queue": "plaintext", 
+                                                  "type": "PULL"}]`
+  """
 
   with err.applicationbound():
     answered = False
@@ -101,21 +101,21 @@ def get_topology(servicename, blocking=True):
 
 
 def put_topology(topology, blocking=True):
-    """
-    Store network topology to Consul's key/value store.
-    
-    Parameters
-    ----------
-    topology : dict
-        Topology definition
-    blocking :
-        Retry if session to the Consul server may not be established
-         (Default value = True)
+  """
+  Store network topology to Consul's key/value store.
+  
+  Parameters
+  ----------
+  topology : dict
+      Topology definition
+  blocking :
+      Retry if session to the Consul server may not be established
+       (Default value = True)
 
-    Returns
-    -------
+  Returns
+  -------
 
-    """
+  """
 
   with err.applicationbound():
     session = consulate.Session()
