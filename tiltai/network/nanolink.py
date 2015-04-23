@@ -7,7 +7,7 @@ import threading
 import Queue
 import socket
 
-from logbook import Logger
+from logbook import Logger, StderrHandler
 
 err = StderrHandler(format_string=tiltai_logs_format)
 log = Logger("network[nanolink]")

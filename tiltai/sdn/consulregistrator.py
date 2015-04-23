@@ -5,7 +5,7 @@ import socket
 
 from tiltai.utils import tiltai_logs_format
 
-from logbook import Logger
+from logbook import Logger, StderrHandler
 
 
 err = StderrHandler(format_string=tiltai_logs_format)
