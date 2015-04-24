@@ -305,7 +305,7 @@ def update(socket, operational_address):
   
   with err.applicationbound():
     # Close dead endpoints
-    log.debug("Updating with new addresses...")
+    log.debug("Updating socket endpoints")
     endpoints_tobe_removed = []
     for point in socket._endpoints:
       if point.address not in operational_address:
@@ -313,7 +313,7 @@ def update(socket, operational_address):
     
     log.debug('Pre:' + str(socket.endpoints))    
     for point in endpoints_tobe_removed:
-        log.debug('Shutdown dead endpoint...')
+        log.debug('Shutdown dead endpoint')
         ret = nn_wrapper.nn_shutdown(socket.fd, point._endpoint_id)
         # TODO: Error checking
         socket._endpoints.remove(point)

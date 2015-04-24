@@ -53,7 +53,7 @@ def addr(service, blocking=True):
         addresses.append(fqdn_ip[srvrecord[1]] + ':' + str(srvrecord[0]))
 
       log.debug(r.response)
-      log.debug(addresses)
+      log.info('Resolved `' + service + '` to addresses: ' + str(addresses))
       return addresses
 
 

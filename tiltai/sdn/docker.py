@@ -34,7 +34,7 @@ def dockersdn(queue_name, resolver, storage):
   
   with err.applicationbound():
     hostname = socket.gethostname()
-    log.debug(hostname)
+    log.debug('My hostname is: ' + hostname)
 
     links = storage(hostname)
 
@@ -50,7 +50,7 @@ def dockersdn(queue_name, resolver, storage):
           if link.get('type', None):
             endpoints['type'] = link['type']
           
-          log.debug(endpoints)
+          log.debug('Topology resolved to ip addresses: ' + str(endpoints))
           return endpoints
 
     return {'endpoints': []}

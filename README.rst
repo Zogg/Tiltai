@@ -1,3 +1,5 @@
+
+
 So how did we end in that state? Lets start from beginning. The main problem here is that we have to know the addresses of the service to which we want to connect in advance. In case of scalable application, that will be many, many addresses.
 
 We could pass the address for the socket to connect to in the sourcecode - a hardcoded address. We could put it somewhere in the configuration file, but that would not make it less hardcoded than that. That is doable, and gate() would work as expected with this code:
