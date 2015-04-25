@@ -1,5 +1,6 @@
 Tiltai
 ------
+`State - code is of alpha state`
 
 Tiltai is a collection of parts to bring development of microservices (and services) up to XXI century capabilities. By providing a concept of **gate**: an autonomous network interface with built-in capabilities of state control, service discovery and separation of cencerns. 
 
