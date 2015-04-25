@@ -26,6 +26,7 @@ The service defined above is run on Apache Mesos with Marathon, packed in a Dock
 Installation
 ------------
 Just::
+
   git clone https://github.com/Zogg/Tiltai.git
   python setup.py install
   
