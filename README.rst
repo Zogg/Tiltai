@@ -21,9 +21,9 @@ It does so by conveniently wrapping common network scalability protocols and pop
 
 The service defined above is run on Apache Mesos with Marathon, packed in a Docker container. The gate returns a Queue, everything that is put in the queue is delivered to a services, which at the time of service development, are yet unknown. The links between services are defined externally (i.e. by devops), and are retrieved during runtime. 
 
-.. Warning
-
-  The code supplied here is in an alpha stage, api changes imminent.
+Warning
+=======
+The code supplied here is in an alpha stage, api changes imminent.
 
 Installation
 ------------
